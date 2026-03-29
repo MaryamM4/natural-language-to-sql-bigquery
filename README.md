@@ -11,3 +11,6 @@ Python script that takes a natural language question, asks an AI for the corresp
 - GCP Credentials configured: ``gcloud auth application-default login``
 - Set project ID: ``gcloud config set project PROJECT_ID``
     Grab project ID from [Google Cloud Console](https://console.cloud.google.com/welcome?authuser=1&organizationId=657476903663)
+
+Tests require additional libraries:
+``pip install -U transformers accelerate bitsandbytes sentencepiece safetensors``
