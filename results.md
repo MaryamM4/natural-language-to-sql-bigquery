@@ -54,3 +54,10 @@ Reasons:
 - drastically reduces memory usage while maintaining reasonable inference quality, suitable for devices with limited GPU VRAM (~8.5 GB) 
 - at the cost of slower CPU-based execution.
 
+Note: It's VERY slow (test lasted 53 mins and counting)
+- Running even a 3B parameter model entirely on CPU is extremely slow.
+- 4-bit quantization reduces RAM usage, but does not speed up CPU inference significantly
+- Sampling parameter: Sampling adds computation compared to greedy decoding
+
+### Outcomes:
+(In progress)
