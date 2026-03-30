@@ -1,0 +1,261 @@
+[
+  {
+    "question": "top_repos_question",
+    "model": "ChatGPT-GPT-5.3",
+    "prompt": "basic_sql_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.0006935596466064453,
+      "execution_time_avg": 0.0007812976837158203,
+      "execution_time_max": 0.0010209083557128906
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "davidblaisonneau-orange/foreman",
+        "4": "kaste/mockito-python"
+      },
+      "num_files": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "Qwen2.5-3B-Instruct",
+    "prompt": "basic_sql_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.0008320808410644531,
+      "execution_time_avg": 0.0009799957275390624,
+      "execution_time_max": 0.0011425018310546875
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "davidblaisonneau-orange/foreman",
+        "4": "kaste/mockito-python"
+      },
+      "num_files": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "Placeholder",
+    "prompt": "basic_sql_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.0010495185852050781,
+      "execution_time_avg": 0.001594686508178711,
+      "execution_time_max": 0.0022792816162109375
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "davidblaisonneau-orange/foreman",
+        "4": "kaste/mockito-python"
+      },
+      "count": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "ChatGPT-GPT-5.3",
+    "prompt": "cot_style_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.002015829086303711,
+      "execution_time_avg": 0.002314853668212891,
+      "execution_time_max": 0.0025572776794433594
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "davidblaisonneau-orange/foreman",
+        "4": "kaste/mockito-python"
+      },
+      "total_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "Qwen2.5-3B-Instruct",
+    "prompt": "chat_style_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.0021779537200927734,
+      "execution_time_avg": 0.0023326873779296875,
+      "execution_time_max": 0.0025131702423095703
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "davidblaisonneau-orange/foreman",
+        "4": "kaste/mockito-python"
+      },
+      "total_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "ChatGPT-GPT-5.3",
+    "prompt": "chat_style_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.0021686553955078125,
+      "execution_time_avg": 0.0024486064910888674,
+      "execution_time_max": 0.0028085708618164062
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "kaste/mockito-python",
+        "4": "davidblaisonneau-orange/foreman"
+      },
+      "total_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "Qwen2.5-3B-Instruct",
+    "prompt": "cot_style_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.0022025108337402344,
+      "execution_time_avg": 0.002583169937133789,
+      "execution_time_max": 0.0032715797424316406
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "kaste/mockito-python",
+        "4": "davidblaisonneau-orange/foreman"
+      },
+      "total_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
+      }
+    },
+    "error": null
+  }
+]

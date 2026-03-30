@@ -1,0 +1,23 @@
+{
+  "top_repos_question": {
+    "Placeholder": {
+      "basic_sql_prompt": "SELECT repo_name, COUNT(DISTINCT path) AS count FROM `bigquery-public-data.github_repos.sample_files` WHERE path LIKE '%.py' GROUP BY repo_name ORDER BY count DESC LIMIT 5;"
+    },
+
+    "Qwen2.5-3B-Instruct": {
+      "basic_sql_prompt": "SELECT repo_name, watch_count FROM `bigquery-public-data.github_repos.sample_repos` ORDER BY watch_count DESC LIMIT 10;",
+
+      "cot_style_prompt": "SELECT l.primary_language AS primary_language, c.repos_name AS repository_name, COUNT(*) AS commit_count FROM `bigquery-public-data.github_repos.commits` AS c JOIN `bigquery-public-data.github_repos.languages` AS l ON c.repos_name = l.repos_name WHERE c.total_commits > 10000 AND c.committer_time_sec > DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR) GROUP BY l.primary_language, c.repos_name HAVING COUNT(DISTINCT c.committer_id) < 5 ORDER BY commit_count DESC LIMIT 20;",
+
+      "chat_style_prompt": "SELECT l.primary_language AS primary_language, c.repos_name AS repository_name, COUNT(*) AS commit_count FROM `bigquery-public-data.github_repos.commits` AS c JOIN `bigquery-public-data.github_repos.languages` AS l ON c.repos_name = l.repos_name WHERE c.total_commits > 10000 AND c.committer_time_sec > DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR) GROUP BY l.primary_language, c.repos_name HAVING COUNT(DISTINCT c.committer_id) < 5 ORDER BY commit_count DESC LIMIT 20;"
+    },
+
+    "ChatGPT-GPT-5.3": {
+      "basic_sql_prompt": "SELECT repo_name, watch_count FROM `bigquery-public-data.github_repos.sample_repos` ORDER BY watch_count DESC LIMIT 10;",
+
+      "cot_style_prompt": "WITH repo_commit_counts AS (\n  SELECT repo_name, COUNT(1) AS total_commits\n  FROM `bigquery-public-data.github_repos.commits`\n  GROUP BY repo_name\n  HAVING total_commits > 10000\n),\n\nrecent_contributors AS (\n  SELECT repo_name, COUNT(DISTINCT committer.email) AS contributors_last_12mo\n  FROM `bigquery-public-data.github_repos.commits`\n  WHERE committer.time_sec >= UNIX_SECONDS(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 12 MONTH))\n    AND committer.email IS NOT NULL\n  GROUP BY repo_name\n  HAVING contributors_last_12mo < 5\n),\n\nprimary_languages AS (\n  SELECT repo_name, language AS primary_language\n  FROM (\n    SELECT repo_name, language, bytes,\n           ROW_NUMBER() OVER (PARTITION BY repo_name ORDER BY bytes DESC) AS rn\n    FROM `bigquery-public-data.github_repos.languages`\n  )\n  WHERE rn = 1\n)\n\nSELECT r.repo_name, r.total_commits, c.contributors_last_12mo, l.primary_language\nFROM repo_commit_counts r\nJOIN recent_contributors c ON r.repo_name = c.repo_name\nLEFT JOIN primary_languages l ON r.repo_name = l.repo_name\nORDER BY r.total_commits DESC\nLIMIT 20;",
+
+      "chat_style_prompt": "WITH all_time_commits AS (\n  SELECT repo_name, COUNT(1) AS total_commits\n  FROM `bigquery-public-data.github_repos.commits`\n  GROUP BY repo_name\n),\n\nrecent_contributors AS (\n  SELECT repo_name, COUNT(DISTINCT committer.email) AS contributors_last_12mo\n  FROM `bigquery-public-data.github_repos.commits`\n  WHERE committer.email IS NOT NULL\n    AND DATE(committer.date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH)\n  GROUP BY repo_name\n),\n\nrepos_with_language AS (\n  SELECT DISTINCT repo_name\n  FROM `bigquery-public-data.github_repos.languages`\n)\n\nSELECT c.repo_name, c.total_commits, rc.contributors_last_12mo\nFROM all_time_commits c\nJOIN recent_contributors rc ON c.repo_name = rc.repo_name\nJOIN repos_with_language l ON c.repo_name = l.repo_name\nWHERE c.total_commits > 10000\n  AND rc.contributors_last_12mo < 5\nORDER BY c.total_commits DESC\nLIMIT 20;"
+    }
+  }
+}

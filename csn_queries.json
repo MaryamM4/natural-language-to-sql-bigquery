@@ -1,0 +1,23 @@
+{
+  "top_repos_question": {
+    "Placeholder": {
+      "basic_sql_prompt": "SELECT repo_name, COUNT(path) AS count FROM sample_files WHERE path LIKE '%.py' GROUP BY repo_name ORDER BY count DESC LIMIT 5;"
+    },
+
+    "Qwen2.5-3B-Instruct": {
+      "basic_sql_prompt": "SELECT repo_name, COUNT(path) AS num_files FROM sample_files GROUP BY repo_name ORDER BY num_files DESC LIMIT 10;",
+
+      "cot_style_prompt": "WITH repo_stats AS (\n  SELECT repo_name, COUNT(code) AS total_functions, COUNT(DISTINCT func_name) AS unique_functions, language AS primary_language\n  FROM sample_files\n  GROUP BY repo_name, language\n)\nSELECT repo_name, total_functions, unique_functions, primary_language\nFROM repo_stats\nWHERE total_functions > 5\nORDER BY total_functions DESC\nLIMIT 20;",
+
+      "chat_style_prompt": "WITH repo_stats AS (\n  SELECT repo_name, COUNT(code) AS total_functions, COUNT(DISTINCT func_name) AS unique_functions, language AS primary_language\n  FROM sample_files\n  GROUP BY repo_name, language\n)\nSELECT repo_name, total_functions, unique_functions, primary_language\nFROM repo_stats\nWHERE total_functions > 5\nORDER BY total_functions DESC\nLIMIT 20;"
+    },
+
+    "ChatGPT-GPT-5.3": {
+      "basic_sql_prompt": "SELECT repo_name, COUNT(path) AS num_files FROM sample_files GROUP BY repo_name ORDER BY num_files DESC LIMIT 10;",
+
+      "cot_style_prompt": "WITH repo_stats AS (\n  SELECT repo_name, COUNT(code) AS total_functions, COUNT(DISTINCT func_name) AS unique_functions, language AS primary_language\n  FROM sample_files\n  GROUP BY repo_name, language\n)\nSELECT repo_name, total_functions, unique_functions, primary_language\nFROM repo_stats\nWHERE total_functions > 5\nORDER BY total_functions DESC\nLIMIT 20;",
+
+      "chat_style_prompt": "WITH repo_stats AS (\n  SELECT repo_name, COUNT(code) AS total_functions, COUNT(DISTINCT func_name) AS unique_functions, language AS primary_language\n  FROM sample_files\n  GROUP BY repo_name, language\n)\nSELECT repo_name, total_functions, unique_functions, primary_language\nFROM repo_stats\nWHERE total_functions > 5\nORDER BY total_functions DESC\nLIMIT 20;"
+    }
+  }
+}
