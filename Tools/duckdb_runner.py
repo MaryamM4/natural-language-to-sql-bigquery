@@ -3,6 +3,16 @@ import duckdb
 import time
 import os
 import pandas as pd
+import json
+
+'''
+
+duckdb missing support for tracking runtime metrics:
+- rows scanned
+- intermediate rows
+- memory usage
+- execution time
+'''
 
 # For dHFing Hugging Face datasets
 dHF_N_ROWS = 200
@@ -25,6 +35,11 @@ class DuckDBRunner(QueryRunner):
 
     def __init__(self, db_path=":memory:", mode="synthetic"):
         self.con = duckdb.connect(db_path)
+        self.con.execute("PRAGMA enable_profiling='json';")
+        self.con.execute("PRAGMA profiling_output='duckdb_profile.json';")
+        # File is overwritten per query (fine for use case), 
+        # but note it's not thread-safe nor parallel-safe
+
         self.engine = "duckdb"
         self.performance_key = "execution_time_avg"
         self.mode = mode
@@ -45,7 +60,7 @@ class DuckDBRunner(QueryRunner):
             raise ValueError(f"Unknown mode: {mode}")
 
     # -------------------------------------
-    # Mode Helpers
+    # (1) Mode Helpers
 
     # Creates a small synthetic dataset similar to GitHub files.
     def _create_synthetic_table(self):
@@ -113,7 +128,57 @@ class DuckDBRunner(QueryRunner):
 
         print()
 
-    # Mode Helpers END
+    # (1) Mode Helpers END
+    # -------------------------------------
+
+    # -------------------------------------
+    # (2) Metric Helpers
+
+    def _extract_plan_metrics(self, profile_path="duckdb_profile.json") -> dict:
+        if not os.path.exists(profile_path):
+            return {}
+
+        try:
+            with open(profile_path, "r") as f:
+                profile = json.load(f)
+
+            def traverse(node, depth=0):
+                operator_count = 1
+                max_depth = depth
+                rows = node.get("cardinality", 0)
+                time = node.get("timing", 0)
+
+                children = node.get("children", [])
+
+                for child in children:
+                    c_count, c_depth, c_rows, c_time = traverse(child, depth + 1)
+                    operator_count += c_count
+                    max_depth = max(max_depth, c_depth)
+                    rows += c_rows
+                    time += c_time
+
+                return operator_count, max_depth, rows, time
+
+            root = profile.get("result", {})
+            op_count, depth, total_rows, total_time = traverse(root)
+
+            return {
+                "actual_operator_count": op_count,
+                "actual_plan_depth": depth,
+                "total_rows_processed": total_rows,
+                "total_operator_time": total_time
+            }
+
+        except Exception as e:
+            return {
+                "actual_operator_count": None,
+                "actual_plan_depth": None,
+                "total_rows_processed": None,
+                "total_operator_time": None,
+                "profile_error": str(e)
+            }
+
+    # (2) Metric Helpers END
     # -------------------------------------
 
     def run_query(self, sql: str, runs=5):
@@ -134,6 +199,8 @@ class DuckDBRunner(QueryRunner):
 
             profile = self.con.execute("EXPLAIN ANALYZE " + sql).fetchall() # Query plan / profile
 
+            plan_metrics = self._extract_plan_metrics()
+
         except Exception as e:
             error = str(e)
             status = "duckdb_runner error"
@@ -144,6 +211,7 @@ class DuckDBRunner(QueryRunner):
                 "execution_time_min": min(times) if times else None,
                 "execution_time_avg": sum(times)/len(times) if times else None,
                 "execution_time_max": max(times) if times else None,
+                **plan_metrics
             },
             "profile": profile
         }, status

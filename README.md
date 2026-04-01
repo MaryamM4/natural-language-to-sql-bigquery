@@ -14,3 +14,5 @@ Tests require additional libraries:
 ## Cloud Computing Lab Requirements
 - Code: You must write functional Python code that uses the BigQuery Client Library.
 - Validation: The script must successfully retrieve data without errors.
+
+## Results

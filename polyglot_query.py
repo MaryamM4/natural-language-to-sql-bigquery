@@ -3,15 +3,16 @@ import json
 from functools import lru_cache
 import duckdb
 import time
+from Tools.sql_query_analyzer import SQLComplexityAnalyzer
 
 # True if: GCP project exists, BigQuery still enabled, 
 # #        tables exists, and credentials  still valid.
 BQ_ONLINE = False  
 
 if BQ_ONLINE:
-    from QueryRunner.bq_runner import BigQueryRunner
+    from Tools.bq_runner import BigQueryRunner
 else:
-    from QueryRunner.duckdb_runner import DuckDBRunner
+    from Tools.duckdb_runner import DuckDBRunner
     
 # Helper reads results from file (waiting for model takes too long)
 # Other than placeholder, SQL query results are AI-generated based on natural language prompts
@@ -35,7 +36,7 @@ def get_query(question: str, model: str, prompt_label: str, file_path: str = "qu
 
     return data[question][model][prompt_label], "success"
 
-def save_results_report(results_log, question: str, output_filename="results", save_to_json:bool=False, sort_by: str = None):
+def save_results_report(results_log, question: str, output_filename="results", save_to_json:bool=False, sort_by: str = None, feature_priority = ["complexity_score"]):
     if not results_log:
         print("No results to save.")
         return
@@ -53,18 +54,25 @@ def save_results_report(results_log, question: str, output_filename="results", s
     # Header
     lines.append(f"# Query Benchmark Report\n")
     lines.append(f"**Total Runs:** {len(results_log)}\n")
-    lines.append(f"**Engine:**     {engine}")
+    lines.append(f"**Engine:**     {engine}\n")
     lines.append(f"**Question:**   {question}\n")
 
     # ----------------------------------
     lines.append("## Metrics\n")
 
-    metric_keys = set()    # Collect all metric keys,
-    for r in results_log:  # which may differ.
+    metric_keys = set()    # Collect all metric keys.
+    for r in results_log:
         if isinstance(r.get("metrics"), dict):
-            metric_keys.update(r["metrics"].keys())
+            for k in r["metrics"].keys():
+                if k in SQLComplexityAnalyzer.FEATURE_KEYS:
+                    continue
+                if k in SQLComplexityAnalyzer.ANTIPATTERN_KEYS:
+                    continue
+                metric_keys.add(k)
 
+    metric_keys.discard("antipattern_penalty") # force last
     metric_keys = sorted(metric_keys)
+    metric_keys.append("antipattern_penalty")  # Not rlly part of metrics but handy here
 
     # Header row
     header = ["Model", "Prompt", "Status"] + metric_keys
@@ -80,8 +88,11 @@ def save_results_report(results_log, question: str, output_filename="results", s
 
         for k in metric_keys:
             try:
-                val = r.get("metrics", {}).get(k, "NA") or {}
-                if isinstance(val, float):
+                val = r.get("metrics", {}).get(k, "NA")
+
+                if val is None:
+                    val = "NA"
+                elif isinstance(val, float):
                     val = f"{val:.4f}"
 
             except Exception:
@@ -111,6 +122,67 @@ def save_results_report(results_log, question: str, output_filename="results", s
             model = prompt = preview_str = "NA"
 
         lines.append(f"| {model} | {prompt} | {preview_str} |")
+
+    # ----------------------------------
+    lines.append("\n## Features\n")
+    
+    feature_keys = sorted(k for k in SQLComplexityAnalyzer.FEATURE_KEYS if k not in feature_priority) + feature_priority
+    feature_keys.append("complexity_score")  # force last column
+
+    lines.append("| Model | Prompt | " + " | ".join(feature_keys) + " |")
+    lines.append("| --- | --- |" + " --- |" * len(feature_keys))
+
+    for r in results_log:
+        try:
+            model = r.get("model", "NA")
+            prompt = r.get("prompt", "NA")
+            metrics = r.get("metrics", {})
+
+            row = [model, prompt]
+
+            for k in feature_keys:
+                val = metrics.get(k, "NA")
+                if isinstance(val, float):
+                    val = f"{val:.4f}"
+                row.append(str(val))
+
+            lines.append("| " + " | ".join(row) + " |")
+
+        except Exception:
+            lines.append("| NA | NA | NA |")
+    
+    # ----------------------------------
+    lines.append("\n## Antipatterns\n")
+
+    lines.append("| (Model) Prompt | Antipatterns Detected | Penalty |")
+    lines.append("| --- | --- | --- |")
+
+    has_antipatterns = False
+
+    for r in results_log:
+        try:
+            metrics = r.get("metrics", {})
+            detected = [ # extract boolean antipattern flags
+                k for k in SQLComplexityAnalyzer.ANTIPATTERN_KEYS
+                if metrics.get(k) is True
+            ]
+
+            if not detected:
+                continue  # skip rows without antipatterns
+            has_antipatterns = True
+
+            model = r.get("model", "NA")
+            prompt = r.get("prompt", "NA")
+            detected_str = ", ".join(sorted(detected))
+            penalty = metrics.get("antipattern_penalty", "NA")
+
+            lines.append(f"| ({model}) {prompt} | {detected_str} | {penalty} |")
+
+        except Exception:
+            lines.append("| NA | NA | NA |")
+
+    if not has_antipatterns:
+        lines.append("| NA | NA | No antipatterns detected |")
 
     # ----------------------------------
     lines.append("\n## Errors\n")
@@ -165,6 +237,7 @@ def run_all_queries(question: str, runner, print_results: bool = True):
         raise ValueError("Unknown question")
 
     results_log = []
+    analyzer = SQLComplexityAnalyzer()  
 
     for model in data[question]:
         for prompt_label in data[question][model]:
@@ -185,17 +258,35 @@ def run_all_queries(question: str, runner, print_results: bool = True):
                 if status == "success":
                     result, run_status = runner.run_query(sql)
 
-                    # execution success decided HERE
-                    engine = result.get("engine")
-                    metrics = result.get("metrics")
+                    engine = result.get("engine") # Note-a: execution success decided HERE
+                    metrics = result.get("metrics") or {}
+
+                    # Append metrics from SQLComplexityAnalyzer
+                    analysis = analyzer.analyze(sql)
+
+                    metrics.update(analysis.get("runtime", {})) # Runtime
+                    features = analysis.get("features", {})     # Features
+                    metrics.update(features)
+                    for k in ["actual_operator_count", "actual_plan_depth"]:
+                        if k in metrics:  # Move actual_* into features 
+                            features[k] = metrics.pop(k)
+                    metrics.update(analysis.get("antipatterns", {})) # Antipatterns
+                    metrics["antipattern_penalty"] = analysis.get("antipattern_penalty") 
+
+                    exec_time = metrics.get("execution_time_avg")
+                    complexity = analysis.get("features", {}).get("complexity_score")
+
+                    if exec_time is not None and complexity and complexity > 0:
+                        metrics["efficiency"] = exec_time / complexity
+                    else:
+                        metrics["efficiency"] = None
 
                     data_preview = None
                     if result and isinstance(result.get("data"), pd.DataFrame):
                         df = result["data"]
                         data_preview = df.head(5).to_dict()
 
-                    # display AFTER success is locked in
-                    if print_results:
+                    if print_results: # Note-a: display AFTER success is locked in
                         try:
                             runner.display_result_head(result, model, prompt_label)
                             runner.display_metrics(result)
@@ -203,7 +294,6 @@ def run_all_queries(question: str, runner, print_results: bool = True):
                             print(f"(Display Error - ignored): {display_error}")
 
                 engine = result.get("engine") if result else None
-                metrics = result.get("metrics") if result else None
 
                 data_preview = None # Avoid huge logs
                 if result and result.get("data") is not None:
@@ -221,7 +311,7 @@ def run_all_queries(question: str, runner, print_results: bool = True):
                 metrics, data_preview = None, None
                 engine = getattr(runner, "engine", "unknown")
 
-                if run_status=="success":
+                if 'run_status' in locals() and run_status == "success":
                     status = "run_all_queries error"
                     error_mssg = str(e)
                 
@@ -236,6 +326,32 @@ def run_all_queries(question: str, runner, print_results: bool = True):
 
     return results_log
 
+def add_normalized_efficiency(results_log):
+    """Compute normalized efficiency across a results_log.
+    Adds 'normed_efficiency' in each item's metrics dict.
+    """
+    # collect all valid efficiencies
+    efficiencies = [
+        r.get("metrics", {}).get("efficiency")
+        for r in results_log
+        if r.get("metrics", {}).get("efficiency") is not None
+    ]
+
+    if not efficiencies:
+        return  # nothing to normalize
+
+    min_eff = min(efficiencies)
+    max_eff = max(efficiencies)
+
+    for r in results_log:
+        metrics = r.get("metrics", {})
+        eff = metrics.get("efficiency")
+
+        if eff is None or max_eff == min_eff:
+            metrics["normed_efficiency"] = None
+        else:
+            metrics["normed_efficiency"] = (eff - min_eff) / (max_eff - min_eff)
+
 if __name__ == "__main__":
     question = "top_repos_question" # "Find repos with most python files."
 
@@ -245,6 +361,6 @@ if __name__ == "__main__":
         runner = DuckDBRunner(mode="dHF_load")
 
     results_log = run_all_queries(question=question, runner=runner, print_results=True)
+    add_normalized_efficiency(results_log)
 
-    performance_key = getattr(runner, "performance_key", "unknown")
-    save_results_report(results_log, question, save_to_json=True, sort_by=runner.performance_key)
+    save_results_report(results_log, question, save_to_json=True, sort_by="normed_efficiency")

@@ -1,14 +1,103 @@
 [
   {
     "question": "top_repos_question",
-    "model": "ChatGPT-GPT-5.3",
-    "prompt": "basic_sql_prompt",
+    "model": "Qwen2.5-3B-Instruct",
+    "prompt": "chat_style_prompt",
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.0006935596466064453,
-      "execution_time_avg": 0.0007812976837158203,
-      "execution_time_max": 0.0010209083557128906
+      "execution_time_min": 0.010113000869750977,
+      "execution_time_avg": 0.014821052551269531,
+      "execution_time_max": 0.02035045623779297,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 1,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 1,
+      "num_conditions": 1,
+      "nesting_depth": 2,
+      "estimated_operator_count": 5,
+      "estimated_plan_depth": 2,
+      "complexity_score": 7.5,
+      "sql_token_count": 53,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": true,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.0019761403401692707,
+      "normed_efficiency": 0.0
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "kaste/mockito-python",
+        "4": "davidblaisonneau-orange/foreman"
+      },
+      "total_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "ChatGPT-GPT-5.3",
+    "prompt": "cot_style_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.015074014663696289,
+      "execution_time_avg": 0.01610589027404785,
+      "execution_time_max": 0.016727924346923828,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 1,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 1,
+      "num_conditions": 1,
+      "nesting_depth": 2,
+      "estimated_operator_count": 5,
+      "estimated_plan_depth": 2,
+      "complexity_score": 7.5,
+      "sql_token_count": 53,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": true,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.0021474520365397137,
+      "normed_efficiency": 0.02420855565126477
     },
     "data_preview": {
       "repo_name": {
@@ -18,12 +107,26 @@
         "3": "davidblaisonneau-orange/foreman",
         "4": "kaste/mockito-python"
       },
-      "num_files": {
+      "total_functions": {
         "0": 35,
         "1": 19,
         "2": 16,
         "3": 15,
         "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
       }
     },
     "error": null
@@ -31,28 +134,131 @@
   {
     "question": "top_repos_question",
     "model": "Qwen2.5-3B-Instruct",
-    "prompt": "basic_sql_prompt",
+    "prompt": "cot_style_prompt",
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.0008320808410644531,
-      "execution_time_avg": 0.0009799957275390624,
-      "execution_time_max": 0.0011425018310546875
+      "execution_time_min": 0.010753870010375977,
+      "execution_time_avg": 0.016159582138061523,
+      "execution_time_max": 0.019618511199951172,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 1,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 1,
+      "num_conditions": 1,
+      "nesting_depth": 2,
+      "estimated_operator_count": 5,
+      "estimated_plan_depth": 2,
+      "complexity_score": 7.5,
+      "sql_token_count": 53,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": true,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.0021546109517415362,
+      "normed_efficiency": 0.025220202846043857
     },
     "data_preview": {
       "repo_name": {
         "0": "mjirik/imcut",
         "1": "astroduff/commah",
         "2": "qubell/contrib-python-qubell-client",
-        "3": "davidblaisonneau-orange/foreman",
-        "4": "kaste/mockito-python"
+        "3": "kaste/mockito-python",
+        "4": "davidblaisonneau-orange/foreman"
       },
-      "num_files": {
+      "total_functions": {
         "0": 35,
         "1": 19,
         "2": 16,
         "3": 15,
         "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
+      }
+    },
+    "error": null
+  },
+  {
+    "question": "top_repos_question",
+    "model": "ChatGPT-GPT-5.3",
+    "prompt": "chat_style_prompt",
+    "status": "success",
+    "engine": "duckdb",
+    "metrics": {
+      "execution_time_min": 0.01663684844970703,
+      "execution_time_avg": 0.018603038787841798,
+      "execution_time_max": 0.01962590217590332,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 1,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 1,
+      "num_conditions": 1,
+      "nesting_depth": 2,
+      "estimated_operator_count": 5,
+      "estimated_plan_depth": 2,
+      "complexity_score": 7.5,
+      "sql_token_count": 53,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": true,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.0024804051717122397,
+      "normed_efficiency": 0.0712591346418412
+    },
+    "data_preview": {
+      "repo_name": {
+        "0": "mjirik/imcut",
+        "1": "astroduff/commah",
+        "2": "qubell/contrib-python-qubell-client",
+        "3": "kaste/mockito-python",
+        "4": "davidblaisonneau-orange/foreman"
+      },
+      "total_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "unique_functions": {
+        "0": 35,
+        "1": 19,
+        "2": 16,
+        "3": 15,
+        "4": 15
+      },
+      "primary_language": {
+        "0": "python",
+        "1": "python",
+        "2": "python",
+        "3": "python",
+        "4": "python"
       }
     },
     "error": null
@@ -64,17 +270,40 @@
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.0010495185852050781,
-      "execution_time_avg": 0.001594686508178711,
-      "execution_time_max": 0.0022792816162109375
+      "execution_time_min": 0.007375478744506836,
+      "execution_time_avg": 0.014461088180541991,
+      "execution_time_max": 0.01820087432861328,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 0,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 0,
+      "num_conditions": 1,
+      "nesting_depth": 1,
+      "estimated_operator_count": 4,
+      "estimated_plan_depth": 1,
+      "complexity_score": 2.5,
+      "sql_token_count": 25,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": false,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.005784435272216797,
+      "normed_efficiency": 0.5381612683324555
     },
     "data_preview": {
       "repo_name": {
         "0": "mjirik/imcut",
         "1": "astroduff/commah",
         "2": "qubell/contrib-python-qubell-client",
-        "3": "davidblaisonneau-orange/foreman",
-        "4": "kaste/mockito-python"
+        "3": "kaste/mockito-python",
+        "4": "davidblaisonneau-orange/foreman"
       },
       "count": {
         "0": 35,
@@ -89,99 +318,36 @@
   {
     "question": "top_repos_question",
     "model": "ChatGPT-GPT-5.3",
-    "prompt": "cot_style_prompt",
+    "prompt": "basic_sql_prompt",
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.002015829086303711,
-      "execution_time_avg": 0.002314853668212891,
-      "execution_time_max": 0.0025572776794433594
-    },
-    "data_preview": {
-      "repo_name": {
-        "0": "mjirik/imcut",
-        "1": "astroduff/commah",
-        "2": "qubell/contrib-python-qubell-client",
-        "3": "davidblaisonneau-orange/foreman",
-        "4": "kaste/mockito-python"
-      },
-      "total_functions": {
-        "0": 35,
-        "1": 19,
-        "2": 16,
-        "3": 15,
-        "4": 15
-      },
-      "unique_functions": {
-        "0": 35,
-        "1": 19,
-        "2": 16,
-        "3": 15,
-        "4": 15
-      },
-      "primary_language": {
-        "0": "python",
-        "1": "python",
-        "2": "python",
-        "3": "python",
-        "4": "python"
-      }
-    },
-    "error": null
-  },
-  {
-    "question": "top_repos_question",
-    "model": "Qwen2.5-3B-Instruct",
-    "prompt": "chat_style_prompt",
-    "status": "success",
-    "engine": "duckdb",
-    "metrics": {
-      "execution_time_min": 0.0021779537200927734,
-      "execution_time_avg": 0.0023326873779296875,
-      "execution_time_max": 0.0025131702423095703
-    },
-    "data_preview": {
-      "repo_name": {
-        "0": "mjirik/imcut",
-        "1": "astroduff/commah",
-        "2": "qubell/contrib-python-qubell-client",
-        "3": "davidblaisonneau-orange/foreman",
-        "4": "kaste/mockito-python"
-      },
-      "total_functions": {
-        "0": 35,
-        "1": 19,
-        "2": 16,
-        "3": 15,
-        "4": 15
-      },
-      "unique_functions": {
-        "0": 35,
-        "1": 19,
-        "2": 16,
-        "3": 15,
-        "4": 15
-      },
-      "primary_language": {
-        "0": "python",
-        "1": "python",
-        "2": "python",
-        "3": "python",
-        "4": "python"
-      }
-    },
-    "error": null
-  },
-  {
-    "question": "top_repos_question",
-    "model": "ChatGPT-GPT-5.3",
-    "prompt": "chat_style_prompt",
-    "status": "success",
-    "engine": "duckdb",
-    "metrics": {
-      "execution_time_min": 0.0021686553955078125,
-      "execution_time_avg": 0.0024486064910888674,
-      "execution_time_max": 0.0028085708618164062
+      "execution_time_min": 0.01296091079711914,
+      "execution_time_avg": 0.015996408462524415,
+      "execution_time_max": 0.018990039825439453,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 0,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 0,
+      "num_conditions": 0,
+      "nesting_depth": 1,
+      "estimated_operator_count": 3,
+      "estimated_plan_depth": 1,
+      "complexity_score": 2.0,
+      "sql_token_count": 20,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": false,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.007998204231262207,
+      "normed_efficiency": 0.8509954190620477
     },
     "data_preview": {
       "repo_name": {
@@ -191,26 +357,12 @@
         "3": "kaste/mockito-python",
         "4": "davidblaisonneau-orange/foreman"
       },
-      "total_functions": {
+      "num_files": {
         "0": 35,
         "1": 19,
         "2": 16,
         "3": 15,
         "4": 15
-      },
-      "unique_functions": {
-        "0": 35,
-        "1": 19,
-        "2": 16,
-        "3": 15,
-        "4": 15
-      },
-      "primary_language": {
-        "0": "python",
-        "1": "python",
-        "2": "python",
-        "3": "python",
-        "4": "python"
       }
     },
     "error": null
@@ -218,13 +370,36 @@
   {
     "question": "top_repos_question",
     "model": "Qwen2.5-3B-Instruct",
-    "prompt": "cot_style_prompt",
+    "prompt": "basic_sql_prompt",
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.0022025108337402344,
-      "execution_time_avg": 0.002583169937133789,
-      "execution_time_max": 0.0032715797424316406
+      "execution_time_min": 0.016964197158813477,
+      "execution_time_avg": 0.018105268478393555,
+      "execution_time_max": 0.020109176635742188,
+      "total_rows_processed": 0,
+      "total_operator_time": 0,
+      "num_joins": 0,
+      "num_ctes": 0,
+      "num_group_by": 1,
+      "num_window_functions": 0,
+      "num_subqueries": 0,
+      "num_conditions": 0,
+      "nesting_depth": 1,
+      "estimated_operator_count": 3,
+      "estimated_plan_depth": 1,
+      "complexity_score": 2.0,
+      "sql_token_count": 20,
+      "uses_select_star": false,
+      "missing_where": false,
+      "too_many_joins": false,
+      "has_subquery_no_join": false,
+      "unbounded_order_by": false,
+      "high_nesting": false,
+      "many_window_functions": false,
+      "antipattern_penalty": null,
+      "efficiency": 0.009052634239196777,
+      "normed_efficiency": 1.0
     },
     "data_preview": {
       "repo_name": {
@@ -234,26 +409,12 @@
         "3": "kaste/mockito-python",
         "4": "davidblaisonneau-orange/foreman"
       },
-      "total_functions": {
+      "num_files": {
         "0": 35,
         "1": 19,
         "2": 16,
         "3": 15,
         "4": 15
-      },
-      "unique_functions": {
-        "0": 35,
-        "1": 19,
-        "2": 16,
-        "3": 15,
-        "4": 15
-      },
-      "primary_language": {
-        "0": "python",
-        "1": "python",
-        "2": "python",
-        "3": "python",
-        "4": "python"
       }
     },
     "error": null
