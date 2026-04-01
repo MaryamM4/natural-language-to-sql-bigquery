@@ -1,5 +1,15 @@
 import re # regex tokenizer
 
+from dataclasses import dataclass
+from typing import Dict
+
+@dataclass
+class QueryAnalysis:
+    features: Dict[str, float]
+    complexity_score: float
+    antipatterns: Dict[str, bool]
+    antipattern_penalty: float
+
 class SQLComplexityAnalyzer:
     complexity_score = {
         "num_conditions":0.5,
@@ -19,6 +29,23 @@ class SQLComplexityAnalyzer:
     FEATURE_KEYS = {"num_joins", "num_ctes", "num_group_by", "num_window_functions", "num_subqueries", "num_conditions", "nesting_depth",
                     "estimated_operator_count", "estimated_plan_depth", "actual_operator_count", "actual_plan_depth", "complexity_score", "sql_token_count"}
         
+    # Primary function
+    def analyze(self, sql: str) -> QueryAnalysis:
+        features = self.count_sql_features(sql)
+        score = self.score_sql_features(features)
+        tokens = self.count_tokens(sql)
+
+        plan_metrics = self._estimate_plan_metrics(sql)
+        anti_patterns = self.detect_anti_patterns(sql)
+        antipatt_score = self.score_anti_patterns(anti_patterns)
+
+        return QueryAnalysis(
+            features={**features, **plan_metrics, "sql_token_count": tokens},
+            complexity_score=score,
+            antipatterns=anti_patterns,
+            antipattern_penalty=antipatt_score
+        )
+
     def count_sql_features(self, sql: str) -> dict:
         sql_upper = sql.upper()
 
@@ -34,7 +61,7 @@ class SQLComplexityAnalyzer:
 
     def score_sql_features(self, features: dict) -> float:
         score = 0.0
-        for k, weight in self.complexity_score.items():  # fixed name
+        for k, weight in self.complexity_score.items(): 
             score += features.get(k, 0) * weight
         return round(score, 4)
 
@@ -42,20 +69,6 @@ class SQLComplexityAnalyzer:
     def count_tokens(self, sql: str) -> int:
         tokens = re.findall(r"[A-Za-z_][A-Za-z0-9_]*|\d+|[<>!=]=|[<>]|[\(\),.*]", sql)
         return len(tokens)
-
-    def analyze(self, sql: str) -> dict:
-        features = self.count_sql_features(sql)
-        score = self.score_sql_features(features)
-        tokens = self.count_tokens(sql)
-
-        plan_metrics = self._estimate_plan_metrics(sql)
-        anti_patterns = self.detect_anti_patterns(sql)
-        antipatt_score = self.score_anti_patterns(anti_patterns)
-
-        return {
-            "features": {**features, **plan_metrics, "complexity_score": score, "sql_token_count": tokens},
-            "antipatterns": {**anti_patterns, "antipattern_penalty": antipatt_score}
-        }
     
     def detect_anti_patterns(self, sql: str) -> dict:
         sql_upper = sql.upper()
@@ -83,7 +96,7 @@ class SQLComplexityAnalyzer:
         return score
 
     # -------------------------------------
-    # Helpers
+    # Estimate Helpers
 
     '''
     Estimates are guessed roughly based on heuristic operators
@@ -94,26 +107,24 @@ class SQLComplexityAnalyzer:
 
     def _estimate_nesting_depth(self, sql_upper: str) -> int:
         depth = max_depth = 0
+
         for char in sql_upper:
             if char == "(":
                 depth += 1
                 max_depth = max(max_depth, depth)
             elif char == ")":
                 depth -= 1
+
         return max_depth
     
     def _estimate_plan_metrics(self, sql: str) -> dict:
         sql_upper = sql.upper()
 
         operator_count = (
-            sql_upper.count("JOIN") +
-            sql_upper.count("WHERE") +
-            sql_upper.count("GROUP BY") +
-            sql_upper.count("ORDER BY") +
-            sql_upper.count("UNION") +
-            sql_upper.count("OVER") +        # window ops
-            sql_upper.count("DISTINCT") +
-            1  # base scan
+            sql_upper.count("JOIN") +  sql_upper.count("WHERE") +
+            sql_upper.count("GROUP BY") +  sql_upper.count("ORDER BY") +
+            sql_upper.count("UNION") + sql_upper.count("OVER") +  
+            sql_upper.count("DISTINCT") +  1  # 1 for base scan
         )
 
         plan_depth = self._estimate_nesting_depth(sql_upper)
@@ -123,5 +134,5 @@ class SQLComplexityAnalyzer:
             "estimated_plan_depth": plan_depth
         }
     
-    # Helpers END
+    # Estimate Helpers END
     # -------------------------------------

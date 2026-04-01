@@ -1,4 +1,4 @@
-from .query_runner import QueryRunner
+from .query_runner import QueryRunner, QueryResult
 import duckdb
 import time
 import os
@@ -33,7 +33,7 @@ class DuckDBRunner(QueryRunner):
     - local:      Uses existing Parquet file
     """
 
-    def __init__(self, db_path=":memory:", mode="synthetic"):
+    def __init__(self, db_path:str = ":memory:", mode:str = "synthetic"):
         self.con = duckdb.connect(db_path)
         self.con.execute("PRAGMA enable_profiling='json';")
         self.con.execute("PRAGMA profiling_output='duckdb_profile.json';")
@@ -72,7 +72,7 @@ class DuckDBRunner(QueryRunner):
         print(f"[DuckDBRunner] Synthetic table '{self.table_name}' created with {len(df)} rows.")
 
     # Loads a local Parquet file into DuckDB, if available.
-    def _load_local_parquet(self, parquet_path="data/sample_files.parquet"):
+    def _load_local_parquet(self, parquet_path:str = "data/sample_files.parquet"):
         if not os.path.exists(parquet_path):
             raise FileNotFoundError(f"Parquet file not found at {parquet_path}")
         
@@ -80,7 +80,7 @@ class DuckDBRunner(QueryRunner):
         print(f"[DuckDBRunner] Loaded local Parquet into table '{self.table_name}'.")
 
     # dHFs a small subset from Hugging Face and create a DuckDB table. Has option to save as Parquet
-    def _load_hf_subset(self, mode, hf_dataset=HF_DATASET, n_samples=dHF_N_ROWS, parquet_path="data/hf_sample_files.parquet"):
+    def _load_hf_subset(self, mode:str, hf_dataset:str = HF_DATASET, n_samples:int = dHF_N_ROWS, parquet_path:str = "data/hf_sample_files.parquet"):
         if mode == "dHF_load":
             if os.path.exists(parquet_path):
                 print(f"[DuckDBRunner] Loading Hugging Face dataset from local file '{parquet_path}'...")
@@ -134,7 +134,7 @@ class DuckDBRunner(QueryRunner):
     # -------------------------------------
     # (2) Metric Helpers
 
-    def _extract_plan_metrics(self, profile_path="duckdb_profile.json") -> dict:
+    def _extract_plan_metrics(self, profile_path:str = "duckdb_profile.json") -> dict:
         if not os.path.exists(profile_path):
             return {}
 
@@ -181,49 +181,51 @@ class DuckDBRunner(QueryRunner):
     # (2) Metric Helpers END
     # -------------------------------------
 
-    def run_query(self, sql: str, runs=5):
-        times = []
-        df = None
-        profile = None
-        error = None
-        status = "success"
+    def run_query(self, sql: str, runs:int = 5) -> QueryResult:
+        result = QueryResult(sql=sql, status="success", engine=self.engine,
+                             data=None, metrics={}, profile=None, error=None)
+        
+        times = [] # DuckDB doesn't track
 
         try:
-            self.con.execute(sql).fetchall() # Warmup
-            df = self.con.execute(sql).df()
+            self.con.execute(sql).fetchall()          # Warmup
+            result.data = self.con.execute(sql).df() # First run, for data
 
             for _ in range(runs): # Timed runs
                 start = time.time()
                 self.con.execute(sql).fetchall()
                 times.append(time.time() - start)
 
-            profile = self.con.execute("EXPLAIN ANALYZE " + sql).fetchall() # Query plan / profile
-
-            plan_metrics = self._extract_plan_metrics()
-
-        except Exception as e:
-            error = str(e)
-            status = "duckdb_runner error"
-
-        return {
-            "engine": self.engine, "data": df,  "error": error,   
-            "metrics": {
+            result.profile = self.con.execute("EXPLAIN ANALYZE " + sql).fetchall() # Query plan / profile
+            plan_metrics = self._extract_plan_metrics()                           
+            result.metrics = {                                                     # Execution metrics
                 "execution_time_min": min(times) if times else None,
-                "execution_time_avg": sum(times)/len(times) if times else None,
+                "execution_time_avg": (sum(times) / len(times)) if times else None,
                 "execution_time_max": max(times) if times else None,
                 **plan_metrics
-            },
-            "profile": profile
-        }, status
-    
-    def display_metrics(self, result):
-        m = result["metrics"]
+            }
 
-        print("\n--- DuckDB Metrics ---")
-        print(f"Min: {m['execution_time_min']:.4f}s")
-        print(f"Avg: {m['execution_time_avg']:.4f}s")
-        print(f"Max: {m['execution_time_max']:.4f}s")
+        except Exception as e:
+            result.error = str(e)
+            result.status = "duckdb run_query error"
+        
+        return result
 
-        print("\n--- Query Plan ---")
-        for row in result["profile"]:
-            print(row)
+    def display_metrics(self, result: QueryResult): 
+        m = result.metrics or {} 
+        
+        print("\n--- DuckDB Metrics ---") 
+        min_t = m.get("execution_time_min") 
+        avg_t = m.get("execution_time_avg") 
+        max_t = m.get("execution_time_max") 
+        
+        print(f"Min: {min_t:.4f}s" if min_t is not None else "Min: NA") 
+        print(f"Avg: {avg_t:.4f}s" if avg_t is not None else "Avg: NA") 
+        print(f"Max: {max_t:.4f}s" if max_t is not None else "Max: NA") 
+        
+        print("\n--- Query Plan ---") 
+        if result.profile:
+            for row in result.profile: 
+                print(row) 
+        else: 
+            print("Profile DNE.")

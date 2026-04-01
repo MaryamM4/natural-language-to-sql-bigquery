@@ -51,8 +51,7 @@ def save_results_report(results_log, question: str, output_filename="results", s
     engine = results_log[0].get("engine", "unknown")
     lines = []
 
-    # Header
-    lines.append(f"# Query Benchmark Report\n")
+    lines.append(f"# Query Benchmark Report\n")  # File Header
     lines.append(f"**Total Runs:** {len(results_log)}\n")
     lines.append(f"**Engine:**     {engine}\n")
     lines.append(f"**Question:**   {question}\n")
@@ -74,14 +73,12 @@ def save_results_report(results_log, question: str, output_filename="results", s
     metric_keys = sorted(metric_keys)
     metric_keys.append("antipattern_penalty")  # Not rlly part of metrics but handy here
 
-    # Header row
-    header = ["Model", "Prompt", "Status"] + metric_keys
+    header = ["Model", "Prompt", "Status"] + metric_keys  # Header row
     lines.append("| " + " | ".join(header) + " |")
     lines.append("|" + " --- |" * len(header))
 
-    # Rows
-    for r in results_log:
-        try:
+    for r in results_log:  # Rows
+        try: 
             row = [r.get("model", "NA"), r.get("prompt", "NA"), r.get("status", "NA")]
         except Exception:
             row = ["NA"] * 3
@@ -103,7 +100,6 @@ def save_results_report(results_log, question: str, output_filename="results", s
 
     # ----------------------------------
     lines.append("\n## Data Preview\n")
-
     lines.append("| Model | Prompt | Data Preview |")
     lines.append("| --- | --- | --- |")
 
@@ -125,7 +121,7 @@ def save_results_report(results_log, question: str, output_filename="results", s
 
     # ----------------------------------
     lines.append("\n## Features\n")
-    
+
     feature_keys = sorted(k for k in SQLComplexityAnalyzer.FEATURE_KEYS if k not in feature_priority) + feature_priority
     feature_keys.append("complexity_score")  # force last column
 
@@ -153,7 +149,6 @@ def save_results_report(results_log, question: str, output_filename="results", s
     
     # ----------------------------------
     lines.append("\n## Antipatterns\n")
-
     lines.append("| (Model) Prompt | Antipatterns Detected | Penalty |")
     lines.append("| --- | --- | --- |")
 
@@ -186,7 +181,6 @@ def save_results_report(results_log, question: str, output_filename="results", s
 
     # ----------------------------------
     lines.append("\n## Errors\n")
-
     lines.append("| (Model) Prompt | Status | Error Message |")
     lines.append("| --- | --- | --- |")
 
@@ -213,7 +207,6 @@ def save_results_report(results_log, question: str, output_filename="results", s
     if not has_errors:
         lines.append("| NA | NA | No errors |")
 
-    # ----------------------------------
     try:
         with open(human_output_file, "w") as f:  # Write readable file
             f.write("\n".join(lines))
@@ -237,15 +230,16 @@ def run_all_queries(question: str, runner, print_results: bool = True):
         raise ValueError("Unknown question")
 
     results_log = []
-    analyzer = SQLComplexityAnalyzer()  
+    analyzer = SQLComplexityAnalyzer()
 
     for model in data[question]:
         for prompt_label in data[question][model]:
 
             sql, status = get_query(question, model, prompt_label)
-            sql = " ".join(sql.split()) # Normalize SQL
-            
+            sql = " ".join(sql.split())  # Normalize SQL
+
             error_mssg = None
+            result = None
 
             if print_results:
                 print(f"\n{'='*60}")
@@ -253,98 +247,113 @@ def run_all_queries(question: str, runner, print_results: bool = True):
                 print(f"SQL:\n{sql}\n")
 
             try:
-                result = None
-
                 if status == "success":
-                    result, run_status = runner.run_query(sql)
+                    result = runner.run_query(sql)
 
-                    engine = result.get("engine") # Note-a: execution success decided HERE
-                    metrics = result.get("metrics") or {}
+                    # -----------------------------
+                    # Extract base fields
+                    engine = result.engine
+                    metrics = result.metrics or {}
 
-                    # Append metrics from SQLComplexityAnalyzer
+                    # -----------------------------
+                    # Analyze SQL
                     analysis = analyzer.analyze(sql)
 
-                    metrics.update(analysis.get("runtime", {})) # Runtime
-                    features = analysis.get("features", {})     # Features
+                    # Features
+                    features = analysis.features or {}
                     metrics.update(features)
-                    for k in ["actual_operator_count", "actual_plan_depth"]:
-                        if k in metrics:  # Move actual_* into features 
-                            features[k] = metrics.pop(k)
-                    metrics.update(analysis.get("antipatterns", {})) # Antipatterns
-                    metrics["antipattern_penalty"] = analysis.get("antipattern_penalty") 
 
+                    # Move actual_* into features section
+                    for k in ["actual_operator_count", "actual_plan_depth"]:
+                        if k in metrics:
+                            features[k] = metrics.pop(k)
+
+                    # Antipatterns
+                    metrics.update(analysis.antipatterns or {})
+                    metrics["antipattern_penalty"] = analysis.antipattern_penalty
+
+                    # -----------------------------
+                    # Efficiency calculation
                     exec_time = metrics.get("execution_time_avg")
-                    complexity = analysis.get("features", {}).get("complexity_score")
+                    complexity = analysis.complexity_score
 
                     if exec_time is not None and complexity and complexity > 0:
                         metrics["efficiency"] = exec_time / complexity
                     else:
                         metrics["efficiency"] = None
 
+                    # -----------------------------
+                    # Data preview
                     data_preview = None
-                    if result and isinstance(result.get("data"), pd.DataFrame):
-                        df = result["data"]
-                        data_preview = df.head(5).to_dict()
+                    if result.data is not None and isinstance(result.data, pd.DataFrame):
+                        data_preview = result.data.head(5).to_dict()
 
-                    if print_results: # Note-a: display AFTER success is locked in
+                    # -----------------------------
+                    # Display
+                    if print_results:
                         try:
-                            runner.display_result_head(result, model, prompt_label)
+                            runner.display_result_head(result=result, model=model, prompt_label=prompt_label, num_rows=10)
                             runner.display_metrics(result)
                         except Exception as display_error:
                             print(f"(Display Error - ignored): {display_error}")
 
-                engine = result.get("engine") if result else None
-
-                data_preview = None # Avoid huge logs
-                if result and result.get("data") is not None:
-                    df = result["data"]
-                    if isinstance(df, pd.DataFrame):
-                        data_preview = df.head(5).to_dict()
-                    else:
-                        data_preview = str(df)[:500]
+                else:
+                    engine = None
+                    metrics = None
+                    data_preview = None
 
             except Exception as e:
                 if print_results:
                     print(f"({model}) {prompt_label}:")
                     print(f"ERROR: {e}")
-                
-                metrics, data_preview = None, None
-                engine = getattr(runner, "engine", "unknown")
 
-                if 'run_status' in locals() and run_status == "success":
+                engine = getattr(runner, "engine", "unknown")
+                metrics = None
+                data_preview = None
+
+                if result and result.status == "success":
                     status = "run_all_queries error"
                     error_mssg = str(e)
-                
                 else:
-                    status = run_status
-                    old_error = result.get("error")
+                    status = result.status if result else "error"
+                    old_error = result.error if result else ""
                     error_mssg = f"{old_error}\n{str(e)}"
-            
-            results_log.append({"question": question, "model": model,  "prompt": prompt_label, "status": status,
-                                "engine": engine,  "metrics": metrics,"data_preview": data_preview, "error": error_mssg})     
 
+            results_log.append({
+                "question": question,
+                "model": model,
+                "prompt": prompt_label,
+                "status": status,
+                "engine": engine,
+                "metrics": metrics,
+                "data_preview": data_preview,
+                "error": error_mssg
+            })
 
     return results_log
 
+# Compute normalized efficiency across a results_log, then
+# adds 'normed_efficiency' in each item's metrics dict
 def add_normalized_efficiency(results_log):
-    """Compute normalized efficiency across a results_log.
-    Adds 'normed_efficiency' in each item's metrics dict.
-    """
-    # collect all valid efficiencies
-    efficiencies = [
-        r.get("metrics", {}).get("efficiency")
-        for r in results_log
-        if r.get("metrics", {}).get("efficiency") is not None
-    ]
+    efficiencies = []
+    for r in results_log:
+        metrics = r.get("metrics")
+        if isinstance(metrics, dict):
+            eff = metrics.get("efficiency")
+            if eff is not None: # collect all valid efficiencies
+                efficiencies.append(eff)
 
     if not efficiencies:
-        return  # nothing to normalize
+        return # nothing to normalize
 
     min_eff = min(efficiencies)
     max_eff = max(efficiencies)
 
     for r in results_log:
-        metrics = r.get("metrics", {})
+        metrics = r.get("metrics")
+        if not isinstance(metrics, dict):
+            continue
+
         eff = metrics.get("efficiency")
 
         if eff is None or max_eff == min_eff:

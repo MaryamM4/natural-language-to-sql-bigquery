@@ -6,9 +6,9 @@
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.010113000869750977,
-      "execution_time_avg": 0.014821052551269531,
-      "execution_time_max": 0.02035045623779297,
+      "execution_time_min": 0.013792753219604492,
+      "execution_time_avg": 0.015912675857543947,
+      "execution_time_max": 0.020123004913330078,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -20,7 +20,6 @@
       "nesting_depth": 2,
       "estimated_operator_count": 5,
       "estimated_plan_depth": 2,
-      "complexity_score": 7.5,
       "sql_token_count": 53,
       "uses_select_star": false,
       "missing_where": false,
@@ -29,8 +28,8 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.0019761403401692707,
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.002121690114339193,
       "normed_efficiency": 0.0
     },
     "data_preview": {
@@ -72,9 +71,9 @@
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.015074014663696289,
-      "execution_time_avg": 0.01610589027404785,
-      "execution_time_max": 0.016727924346923828,
+      "execution_time_min": 0.015364885330200195,
+      "execution_time_avg": 0.016986846923828125,
+      "execution_time_max": 0.018410444259643555,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -86,7 +85,6 @@
       "nesting_depth": 2,
       "estimated_operator_count": 5,
       "estimated_plan_depth": 2,
-      "complexity_score": 7.5,
       "sql_token_count": 53,
       "uses_select_star": false,
       "missing_where": false,
@@ -95,9 +93,9 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.0021474520365397137,
-      "normed_efficiency": 0.02420855565126477
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.0022649129231770834,
+      "normed_efficiency": 0.022341742273071664
     },
     "data_preview": {
       "repo_name": {
@@ -133,14 +131,14 @@
   },
   {
     "question": "top_repos_question",
-    "model": "Qwen2.5-3B-Instruct",
-    "prompt": "cot_style_prompt",
+    "model": "ChatGPT-GPT-5.3",
+    "prompt": "chat_style_prompt",
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.010753870010375977,
-      "execution_time_avg": 0.016159582138061523,
-      "execution_time_max": 0.019618511199951172,
+      "execution_time_min": 0.012241363525390625,
+      "execution_time_avg": 0.017180538177490233,
+      "execution_time_max": 0.02127695083618164,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -152,7 +150,6 @@
       "nesting_depth": 2,
       "estimated_operator_count": 5,
       "estimated_plan_depth": 2,
-      "complexity_score": 7.5,
       "sql_token_count": 53,
       "uses_select_star": false,
       "missing_where": false,
@@ -161,9 +158,9 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.0021546109517415362,
-      "normed_efficiency": 0.025220202846043857
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.0022907384236653646,
+      "normed_efficiency": 0.026370337164234134
     },
     "data_preview": {
       "repo_name": {
@@ -199,14 +196,14 @@
   },
   {
     "question": "top_repos_question",
-    "model": "ChatGPT-GPT-5.3",
-    "prompt": "chat_style_prompt",
+    "model": "Qwen2.5-3B-Instruct",
+    "prompt": "cot_style_prompt",
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.01663684844970703,
-      "execution_time_avg": 0.018603038787841798,
-      "execution_time_max": 0.01962590217590332,
+      "execution_time_min": 0.015183210372924805,
+      "execution_time_avg": 0.017350530624389647,
+      "execution_time_max": 0.019087791442871094,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -218,7 +215,6 @@
       "nesting_depth": 2,
       "estimated_operator_count": 5,
       "estimated_plan_depth": 2,
-      "complexity_score": 7.5,
       "sql_token_count": 53,
       "uses_select_star": false,
       "missing_where": false,
@@ -227,9 +223,9 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.0024804051717122397,
-      "normed_efficiency": 0.0712591346418412
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.002313404083251953,
+      "normed_efficiency": 0.02990601928806331
     },
     "data_preview": {
       "repo_name": {
@@ -270,9 +266,9 @@
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.007375478744506836,
-      "execution_time_avg": 0.014461088180541991,
-      "execution_time_max": 0.01820087432861328,
+      "execution_time_min": 0.006727933883666992,
+      "execution_time_avg": 0.014081907272338868,
+      "execution_time_max": 0.01683211326599121,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -284,7 +280,6 @@
       "nesting_depth": 1,
       "estimated_operator_count": 4,
       "estimated_plan_depth": 1,
-      "complexity_score": 2.5,
       "sql_token_count": 25,
       "uses_select_star": false,
       "missing_where": false,
@@ -293,9 +288,9 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.005784435272216797,
-      "normed_efficiency": 0.5381612683324555
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.005632762908935547,
+      "normed_efficiency": 0.5477024512740357
     },
     "data_preview": {
       "repo_name": {
@@ -322,9 +317,9 @@
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.01296091079711914,
-      "execution_time_avg": 0.015996408462524415,
-      "execution_time_max": 0.018990039825439453,
+      "execution_time_min": 0.011407852172851562,
+      "execution_time_avg": 0.014544868469238281,
+      "execution_time_max": 0.015607118606567383,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -336,7 +331,6 @@
       "nesting_depth": 1,
       "estimated_operator_count": 3,
       "estimated_plan_depth": 1,
-      "complexity_score": 2.0,
       "sql_token_count": 20,
       "uses_select_star": false,
       "missing_where": false,
@@ -345,17 +339,17 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.007998204231262207,
-      "normed_efficiency": 0.8509954190620477
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.0072724342346191405,
+      "normed_efficiency": 0.8034795475913723
     },
     "data_preview": {
       "repo_name": {
         "0": "mjirik/imcut",
         "1": "astroduff/commah",
         "2": "qubell/contrib-python-qubell-client",
-        "3": "kaste/mockito-python",
-        "4": "davidblaisonneau-orange/foreman"
+        "3": "davidblaisonneau-orange/foreman",
+        "4": "kaste/mockito-python"
       },
       "num_files": {
         "0": 35,
@@ -374,9 +368,9 @@
     "status": "success",
     "engine": "duckdb",
     "metrics": {
-      "execution_time_min": 0.016964197158813477,
-      "execution_time_avg": 0.018105268478393555,
-      "execution_time_max": 0.020109176635742188,
+      "execution_time_min": 0.016057252883911133,
+      "execution_time_avg": 0.017064476013183595,
+      "execution_time_max": 0.018166303634643555,
       "total_rows_processed": 0,
       "total_operator_time": 0,
       "num_joins": 0,
@@ -388,7 +382,6 @@
       "nesting_depth": 1,
       "estimated_operator_count": 3,
       "estimated_plan_depth": 1,
-      "complexity_score": 2.0,
       "sql_token_count": 20,
       "uses_select_star": false,
       "missing_where": false,
@@ -397,8 +390,8 @@
       "unbounded_order_by": false,
       "high_nesting": false,
       "many_window_functions": false,
-      "antipattern_penalty": null,
-      "efficiency": 0.009052634239196777,
+      "antipattern_penalty": 0.0,
+      "efficiency": 0.008532238006591798,
       "normed_efficiency": 1.0
     },
     "data_preview": {
