@@ -211,6 +211,7 @@ class DuckDBRunner(QueryRunner):
         
         return result
 
+    '''
     def display_metrics(self, result: QueryResult): 
         m = result.metrics or {} 
         
@@ -229,3 +230,64 @@ class DuckDBRunner(QueryRunner):
                 print(row) 
         else: 
             print("Profile DNE.")
+    '''
+
+    def display_metrics(self, result: QueryResult):
+        m = result.metrics or {}
+        print("\n--- DuckDB Metrics ---")
+        min_t = m.get("execution_time_min")
+        avg_t = m.get("execution_time_avg")
+        max_t = m.get("execution_time_max")
+
+        print(f"Min: {min_t:.4f}s" if min_t is not None else "Min: NA")
+        print(f"Avg: {avg_t:.4f}s" if avg_t is not None else "Avg: NA")
+        print(f"Max: {max_t:.4f}s" if max_t is not None else "Max: NA")
+
+        print("\n--- Query Plan (cleaned) ---")
+        if not result.profile:
+            print("Profile DNE.")
+            return
+
+        try:
+            raw_json = None # Extract JSON string from DuckDB tuple
+            for row in result.profile:
+                if isinstance(row, tuple) and len(row) == 2:
+                    raw_json = row[1]
+                    break
+
+            if not raw_json:
+                print("Failed to parse profile.")
+                return
+
+            profile = json.loads(raw_json)
+            root = profile.get("children", [None])[0]
+
+            
+            def print_node(node, indent=0): # Recursive pretty printer
+                if not node:
+                    return
+
+                node_indent = "  " * indent
+                info_prefix = "  " * indent + "    "  # extra info slightly deeper
+
+
+                name = node.get("operator_name", "UNKNOWN")
+                if time > 0.001: # highlight expensive nodes
+                    name = "⚠️" + name
+                op_type = node.get("operator_type", "")
+                rows = node.get("operator_cardinality", "?")
+                time = node.get("operator_timing", 0)
+
+                print(f"{node_indent}- {name} ({op_type}): rows={rows},  time={time:.6f}s")
+
+                extra = node.get("extra_info", {}) 
+                for k, v in extra.items():  # Align extra info under node
+                    print(f"{info_prefix}{k}: {v}")
+
+                for child in node.get("children", []):
+                    print_node(child, indent + 1)
+
+            print_node(root)
+
+        except Exception as e:
+            print(f"Failed to parse query plan: {e}")

@@ -2,7 +2,7 @@
     "total_bytes_written": 0,
     "total_bytes_read": 0,
     "system_peak_temp_dir_size": 0,
-    "system_peak_buffer_memory": 160804864,
+    "system_peak_buffer_memory": 125083648,
     "rows_returned": 14,
     "wal_replay_entry_count": 0,
     "result_set_size": 672,
@@ -10,14 +10,14 @@
     "waiting_to_attach_latency": 0.0,
     "attach_load_storage_latency": 0.0,
     "blocked_thread_time": 0.0,
-    "cpu_time": 0.0037478939999999994,
+    "cpu_time": 0.004984291999999999,
     "extra_info": {},
-    "total_memory_allocated": 71303168,
+    "total_memory_allocated": 79429632,
     "cumulative_cardinality": 682,
     "checkpoint_latency": 0.0,
     "cumulative_rows_scanned": 200,
     "write_to_wal_latency": 0.0,
-    "latency": 0.00401146,
+    "latency": 0.003770868,
     "attach_replay_wal_latency": 0.0,
     "commit_local_storage_latency": 0.0,
     "children": [
@@ -25,9 +25,9 @@
             "system_peak_temp_dir_size": 0,
             "system_peak_buffer_memory": 0,
             "result_set_size": 672,
-            "operator_timing": 0.000055790000000000006,
+            "operator_timing": 0.000058979,
             "operator_type": "TOP_N",
-            "cpu_time": 0.0037423029999999993,
+            "cpu_time": 0.004979698999999999,
             "extra_info": {
                 "Top": "20",
                 "Order By": "repo_stats.total_functions DESC"
@@ -42,9 +42,9 @@
                     "system_peak_temp_dir_size": 0,
                     "system_peak_buffer_memory": 0,
                     "result_set_size": 672,
-                    "operator_timing": 0.000005783,
+                    "operator_timing": 0.0000075749999999999995,
                     "operator_type": "PROJECTION",
-                    "cpu_time": 0.0036865129999999993,
+                    "cpu_time": 0.004920719999999999,
                     "extra_info": {
                         "Projections": [
                             "repo_name",
@@ -64,9 +64,9 @@
                             "system_peak_temp_dir_size": 0,
                             "system_peak_buffer_memory": 0,
                             "result_set_size": 672,
-                            "operator_timing": 0.000133745,
+                            "operator_timing": 0.00019933200000000004,
                             "operator_type": "FILTER",
-                            "cpu_time": 0.0036807299999999992,
+                            "cpu_time": 0.004913144999999999,
                             "extra_info": {
                                 "Expression": "(total_functions > 5)",
                                 "Estimated Cardinality": "3"
@@ -81,9 +81,9 @@
                                     "system_peak_temp_dir_size": 0,
                                     "system_peak_buffer_memory": 0,
                                     "result_set_size": 960,
-                                    "operator_timing": 0.000028181999999999995,
+                                    "operator_timing": 0.000028023999999999998,
                                     "operator_type": "PROJECTION",
-                                    "cpu_time": 0.0035469849999999995,
+                                    "cpu_time": 0.004713812999999999,
                                     "extra_info": {
                                         "Projections": [
                                             "#0",
@@ -103,9 +103,9 @@
                                             "system_peak_temp_dir_size": 0,
                                             "system_peak_buffer_memory": 0,
                                             "result_set_size": 800,
-                                            "operator_timing": 0.003465739,
+                                            "operator_timing": 0.0046503659999999995,
                                             "operator_type": "HASH_GROUP_BY",
-                                            "cpu_time": 0.0035188029999999996,
+                                            "cpu_time": 0.004685788999999999,
                                             "extra_info": {
                                                 "Groups": [
                                                     "#0",
@@ -127,9 +127,9 @@
                                                     "system_peak_temp_dir_size": 0,
                                                     "system_peak_buffer_memory": 0,
                                                     "result_set_size": 8000,
-                                                    "operator_timing": 1.62e-7,
+                                                    "operator_timing": 1.39e-7,
                                                     "operator_type": "PROJECTION",
-                                                    "cpu_time": 0.000053064000000000006,
+                                                    "cpu_time": 0.000035422999999999996,
                                                     "extra_info": {
                                                         "Projections": [
                                                             "repo_name",
@@ -148,9 +148,9 @@
                                                             "system_peak_temp_dir_size": 0,
                                                             "system_peak_buffer_memory": 0,
                                                             "result_set_size": 11200,
-                                                            "operator_timing": 0.000005164,
+                                                            "operator_timing": 0.000003998,
                                                             "operator_type": "PROJECTION",
-                                                            "cpu_time": 0.000052902,
+                                                            "cpu_time": 0.000035283999999999996,
                                                             "extra_info": {
                                                                 "Projections": [
                                                                     "#0",
@@ -170,9 +170,9 @@
                                                                     "system_peak_temp_dir_size": 0,
                                                                     "system_peak_buffer_memory": 0,
                                                                     "result_set_size": 12800,
-                                                                    "operator_timing": 0.000047738,
+                                                                    "operator_timing": 0.000031286,
                                                                     "operator_type": "TABLE_SCAN",
-                                                                    "cpu_time": 0.000047738,
+                                                                    "cpu_time": 0.000031286,
                                                                     "extra_info": {
                                                                         "Table": "memory.main.sample_files",
                                                                         "Type": "Sequential Scan",
